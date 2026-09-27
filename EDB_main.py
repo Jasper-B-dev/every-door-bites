@@ -1,6 +1,9 @@
 import math
 import random
 
+from psutil import process_iter
+
+
 #CLASSES
 class Player:
     def __init__(self, hp: float, atk: float):
@@ -16,6 +19,28 @@ class Enemy:
     def __init__(self, hp: float, atk: float):
         self.hp = hp
         self.atk = atk
+
+class Item:
+    def __init__(self, name: str, item_type: str, stat_boost: float, rarity: str):
+        self.name = name
+        self.item_type = item_type
+        self.stat_boost = stat_boost
+        self.rarity = rarity
+
+        if rarity not in rarities:
+            raise ValueError(f"{rarity} is invalid item rarity")
+
+        match item_type:
+            case "Weapon":
+                pass
+            case "Armor":
+                pass
+            case _:
+                raise ValueError(f"{item_type} is invalid item type")
+    def __str__(self):
+        return f"{self.name} ({self.rarity} {self.item_type}, +{self.stat_boost})"
+    def __repr__(self):
+        return self.__str__()
 
 class Room:
     def __init__(self, room_type: str, doors: dict):
@@ -86,8 +111,52 @@ def alive_checker(player_hp, enemy_hp):
     else:
         return "All alive"
 
+def item_roller(rarity: str, amount: int):
+    if amount < 1:
+        raise ValueError("Amount should be 1 at least")
+
+    matching_items = [item for item in item_list if item.rarity == rarity]
+    roll_items = []
+    for item in range(amount):
+        index = random.randint(0, len(matching_items) - 1)
+        roll_items.append(matching_items[index])
+        #temp
+    return roll_items, matching_items
+
+
+
+
+#DATA
+rarities = ["Trash", "Poor", "Standard", "Good", "Great", "Super", "Perfect"]
+
+weapons = [ #temp stat_boost value, adjust later
+    Item("Wooden Shard", "Weapon", 1, "Trash"),
+    Item("Chipped Stone", "Weapon", 2, "Trash"),
+    Item("Scrap Knife", "Weapon", 3, "Trash"),
+    Item("Bent Pipe", "Weapon", 4, "Trash"),
+    Item("Dull Cleaver", "Weapon", 8, "Poor"),
+    Item("Old Hunting Knife", "Weapon", 10, "Poor"),
+    Item("Bronze Dagger", "Weapon", 12, "Poor"),
+    Item("Rusted Iron Blade", "Weapon", 14, "Poor")
+]
+armor = [   #temp stat_boost value, adjust later
+    Item("Cardboard Vest", "Armor", 1, "Trash"),
+    Item("Thick Canvas Wrap", "Armor", 2, "Trash"),
+    Item("Plastic Trash Lid", "Armor", 3, "Trash"),
+    Item("Ripped Leather Jacket", "Armor", 4, "Trash"),
+    Item("Burlap & Chain Mail", "Armor", 8, "Poor"),
+    Item("Padded Work Vest", "Armor", 10, "Poor"),
+    Item("Boiled Leather Scraps", "Armor", 12, "Poor"),
+    Item("Rusted Scrap Breastplate", "Armor", 14, "Poor")
+]
+
+item_list = weapons + armor
+
+
 
 #TESTING
+
+print(item_roller("Trash", 3))
 
 Player1 = Player(100,25)
 Zombie = Enemy(67, 40)
